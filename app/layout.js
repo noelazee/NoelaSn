@@ -1,9 +1,9 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'SniperBot — AI Crypto Trading Platform',
-  description: 'Sniper-level AI trading assistant for BTC, ETH, SOL, BNB. Multi-exchange, multi-strategy.',
-  keywords: ['crypto', 'trading', 'bitcoin', 'ethereum', 'AI', 'sniper'],
+  title: 'NOELA — Sniper Trading & News Curation',
+  description: 'AI-powered sniper trading for crypto + agent curation of verified news. Precision over frequency. Earn NEWS tokens by curating.',
+  keywords: ['crypto', 'trading', 'sniper', 'news', 'curation', 'agents', 'world-chain'],
 }
 
 export default function RootLayout({ children }) {

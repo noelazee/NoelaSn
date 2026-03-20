@@ -1,5 +1,5 @@
-import SniperPlatform from './SniperPlatform'
+import HomePage from './HomePage'
 
 export default function Page() {
-  return <SniperPlatform />
+  return <HomePage />
 }
