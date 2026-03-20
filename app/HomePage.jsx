@@ -5,7 +5,7 @@ import SniperPlatform from './SniperPlatform'
 import Newsworthy from './newsworthy/NewsAgent'
 
 export default function HomePage() {
-  const [mode, setMode] = useState('home') // 'home' | 'sniper' | 'agent'
+  const [mode, setMode] = useState('home') 
   const [agentState, setAgentState] = useState({
     registered: false,
     funded: false,
@@ -31,7 +31,7 @@ export default function HomePage() {
     )
   }
 
-  // Home screen — choose between modes
+  
   return (
     <div style={{
       background: 'linear-gradient(135deg, #050508 0%, #0a0a12 100%)',
@@ -146,7 +146,7 @@ export default function HomePage() {
             margin: '0',
             lineHeight: '1.5',
           }}>
-            High-precision crypto trading. BTC, ETH, SOL, BNB. Multi-exchange.
+            High Precision crypto trading. BTC ETH SOL BNB. Multi-exchange.
           </p>
         </div>
 
@@ -200,7 +200,7 @@ export default function HomePage() {
         textAlign: 'center',
       }}>
         <p>
-          Built on World Chain (480) | Powered by NOELA AI
+         Powered by NOELA_ZEE
         </p>
       </div>
     </div>
