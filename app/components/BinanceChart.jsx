@@ -1,191 +1,161 @@
-'use client';
+'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react'
 
-export default function BinanceChart({ symbol = 'BTCUSDT', interval = '15m', height = 400 }) {
-  const containerRef = useRef(null);
-  const chartRef = useRef(null);
-  const seriesRef = useRef(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [lastPrice, setLastPrice] = useState(0);
-  const [priceChange, setPriceChange] = useState(0);
+const INTERVALS = ['1m', '5m', '15m', '30m', '1h', '4h', '1d']
+
+export default function BinanceChart({ symbol = 'BTCUSDT', interval: init = '15m', height = 220, pairColor = '#00f5a0' }) {
+  const containerRef = useRef(null)
+  const chartRef     = useRef(null)
+  const seriesRef    = useRef(null)
+  const wsRef        = useRef(null)
+  const [interval, setIntervalVal] = useState(init)
+  const [status,   setStatus]      = useState('loading')
+  const [price,    setPrice]       = useState(0)
+  const [change,   setChange]      = useState(0)
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !containerRef.current) return
+    let destroyed = false
+
     const initChart = async () => {
       try {
-        const { createChart } = await import('lightweight-charts');
-        if (!containerRef.current) return;
+        if (chartRef.current) { try { chartRef.current.remove() } catch {} }
+        if (wsRef.current)    { try { wsRef.current.close()    } catch {} }
+        setStatus('loading')
+
+        const { createChart } = await import('lightweight-charts')
+        if (destroyed || !containerRef.current) return
 
         const chart = createChart(containerRef.current, {
-          layout: {
-            textColor: '#d1d5db',
-            background: { color: '#0f172a' },
-          },
-          width: containerRef.current.clientWidth,
-          height: height,
-          timeScale: {
-            timeVisible: true,
-            secondsVisible: false,
-            barSpacing: 12,
-          },
-          watermark: {
-            color: 'rgba(11, 94, 215, 0.4)',
-            visible: true,
-            text: 'NOELA SNIPER',
-            fontSize: 20,
-            horzAlign: 'right',
-            vertAlign: 'bottom',
-          },
-        });
+          layout:          { background: { color: '#07070d' }, textColor: '#4a5568' },
+          grid:            { vertLines: { color: '#1c1c2a' }, horzLines: { color: '#1c1c2a' } },
+          crosshair:       { mode: 1 },
+          rightPriceScale: { borderColor: '#1c1c2a' },
+          timeScale:       { borderColor: '#1c1c2a', timeVisible: true, secondsVisible: false },
+          width:           containerRef.current.clientWidth,
+          height:          height,
+        })
+        chartRef.current = chart
 
-        chartRef.current = chart;
+        const series = chart.addCandlestickSeries({
+          upColor:         '#00f5a0',
+          downColor:       '#ff3b5c',
+          borderUpColor:   '#00f5a0',
+          borderDownColor: '#ff3b5c',
+          wickUpColor:     '#00f5a060',
+          wickDownColor:   '#ff3b5c60',
+        })
+        seriesRef.current = series
 
-        const fetchKlines = async () => {
-          try {
-            const response = await fetch(
-              `/api/binance/klines?symbol=${symbol}&interval=${interval}&limit=100`
-            );
+        const res  = await fetch(`/api/binance/klines?symbol=${symbol}&interval=${interval}&limit=100`)
+        const data = await res.json()
+        if (destroyed) return
+        if (!Array.isArray(data)) throw new Error('Invalid data')
 
-            if (!response.ok) {
-              throw new Error(`API error: ${response.status}`);
-            }
+        const candles = data.map(k => ({
+          time:  Math.floor(k[0] / 1000),
+          open:  parseFloat(k[1]),
+          high:  parseFloat(k[2]),
+          low:   parseFloat(k[3]),
+          close: parseFloat(k[4]),
+        }))
 
-            
-            const data = await response.json();
+        series.setData(candles)
+        chart.timeScale().fitContent()
 
-            if (!Array.isArray(data)) {
-              throw new Error('Invalid data format');
-            }
+        const last = candles[candles.length - 1]
+        setPrice(last.close)
+        setChange(((last.close - candles[0].open) / candles[0].open) * 100)
+        setStatus('live')
 
-            const candlesticks = data.map((kline) => ({
-              time: Math.floor(kline[0] / 1000),
-              open: parseFloat(kline[1]),
-              high: parseFloat(kline[2]),
-              low: parseFloat(kline[3]),
-              close: parseFloat(kline[4]),
-            }));
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${interval}`)
+        wsRef.current = ws
 
-            const series = chart.addCandlestickSeries({
-              upColor: '#00f5a0',
-              downColor: '#ff4757',
-              borderUpColor: '#00f5a0',
-              borderDownColor: '#ff4757',
-              wickUpColor: '#00f5a0',
-              wickDownColor: '#ff4757',
-            });
+        ws.onmessage = e => {
+          if (destroyed) return
+          const k = JSON.parse(e.data).k
+          series.update({
+            time:  Math.floor(k.t / 1000),
+            open:  parseFloat(k.o),
+            high:  parseFloat(k.h),
+            low:   parseFloat(k.l),
+            close: parseFloat(k.c),
+          })
+          setPrice(parseFloat(k.c))
+        }
+        ws.onclose = () => { if (!destroyed) setTimeout(initChart, 3000) }
 
-            series.setData(candlesticks);
-            seriesRef.current = series;
+        const ro = new ResizeObserver(() => {
+          if (containerRef.current && chart) chart.applyOptions({ width: containerRef.current.clientWidth })
+        })
+        ro.observe(containerRef.current)
 
-            const lastCandle = candlesticks[candlesticks.length - 1];
-            setLastPrice(lastCandle.close);
-            setPriceChange(
-              ((lastCandle.close - candlesticks[0].open) / candlesticks[0].open) * 100
-            );
-
-            chart.timeScale().fitContent();
-            setLoading(false);
-          } catch (err) {
-            console.error('[BinanceChart] Klines fetch error:', err);
-            setError('Failed to load chart data');
-            setLoading(false);
-          }
-        };
-
-        await fetchKlines();
-
-        
-        const ws = new WebSocket(
-          `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${interval}`
-        );
-
-        ws.onmessage = (event) => {
-          const kline = JSON.parse(event.data).k;
-          if (seriesRef.current) {
-            seriesRef.current.update({
-              time:  Math.floor(kline.t / 1000),
-              open:  parseFloat(kline.o),
-              high:  parseFloat(kline.h),
-              low:   parseFloat(kline.l),
-              close: parseFloat(kline.c),
-            });
-            setLastPrice(parseFloat(kline.c));
-          }
-        };
-
-        ws.onerror = () => console.error('[BinanceChart] WebSocket error');
-
-        
-        const handleResize = () => {
-          if (containerRef.current && chartRef.current) {
-            chartRef.current.applyOptions({
-              width: containerRef.current.clientWidth,
-            });
-          }
-        };
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-          window.removeEventListener('resize', handleResize);
-          if (ws.readyState === WebSocket.OPEN) ws.close();
-          if (chartRef.current) chartRef.current.remove();
-        };
-      } catch (err) {
-        console.error('[BinanceChart] Init error:', err);
-        setError('Failed to initialize chart');
-        setLoading(false);
+      } catch {
+        if (!destroyed) setStatus('error')
       }
-    };
+    }
 
-    initChart();
-  }, [symbol, interval, height]);
+    initChart()
+    return () => {
+      destroyed = true
+      try { wsRef.current?.close()     } catch {}
+      try { chartRef.current?.remove() } catch {}
+    }
+  }, [symbol, interval, height])
+
+  const pos = change >= 0
 
   return (
-    <div style={{ width: '100%', position: 'relative' }}>
-      {loading && (
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(15, 23, 42, 0.8)', zIndex: 10, borderRadius: '8px',
-        }}>
-          <div style={{ color: '#00f5a0', fontSize: '14px' }}>Loading chart...</div>
-        </div>
-      )}
-
-      {error && (
-        <div style={{
-          padding: '16px', background: '#ff475720', color: '#ff4757',
-          borderRadius: '8px', fontSize: '14px', marginBottom: '16px',
-          border: '1px solid #ff475740',
-        }}>
-          {error}
-        </div>
-      )}
-
-      <div ref={containerRef} style={{
-        width: '100%', height: `${height}px`, borderRadius: '8px',
-        background: '#0f172a', border: '1px solid #1e293b', overflow: 'hidden',
-      }} />
-
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        marginTop: '12px', padding: '8px 12px',
-        background: '#1e293b', borderRadius: '6px',
-      }}>
-        <div>
-          <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>{symbol}</div>
-          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00f5a0' }}>
-            ${lastPrice.toFixed(2)}
-          </div>
-        </div>
-        <div style={{
-          fontSize: '14px', fontWeight: '600',
-          color: priceChange >= 0 ? '#00f5a0' : '#ff4757',
-        }}>
-          {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
+    <div style={{ background: '#07070d', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:4, padding:'7px 10px', borderBottom:'1px solid #1c1c2a' }}>
+        {INTERVALS.map(iv => (
+          <button key={iv} onClick={() => setIntervalVal(iv)} style={{
+            fontFamily:"'Space Mono',monospace", fontSize:10, padding:'3px 7px', borderRadius:5, cursor:'pointer',
+            border:     `1px solid ${interval===iv?'#00f5a050':'#1c1c2a'}`,
+            background: interval===iv?'#00f5a015':'transparent',
+            color:      interval===iv?'#00f5a0':'#4a5568',
+          }}>{iv}</button>
+        ))}
+        <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
+          {price > 0 && (
+            <span style={{ fontFamily:"'Space Mono',monospace", fontSize:12, color:'#fff', fontWeight:700 }}>
+              ${price.toFixed(price > 100 ? 2 : 4)}
+              <span style={{ fontSize:10, color:pos?'#00f5a0':'#ff3b5c', marginLeft:5 }}>
+                {pos?'+':''}{change.toFixed(2)}%
+              </span>
+            </span>
+          )}
+          {status==='live' && (
+            <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <span style={{ width:5,height:5,borderRadius:'50%',background:'#00f5a0',display:'inline-block',animation:'pulse 2s infinite' }}/>
+              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#00f5a0' }}>LIVE</span>
+            </div>
+          )}
+          {status==='loading' && <span style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#4a5568' }}>Loading...</span>}
+          {status==='error' && (
+            <span onClick={() => setStatus('loading')} style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'#ff3b5c', cursor:'pointer' }}>
+              ⚠ Retry
+            </span>
+          )}
         </div>
       </div>
+      <div style={{ position:'relative' }}>
+        <div ref={containerRef} style={{ width:'100%' }} />
+        {status !== 'live' && (
+          <div style={{ position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'#07070d',height }}>
+            <div style={{ fontSize:20, marginBottom:8 }}>{status==='error'?'⚠️':'📡'}</div>
+            <div style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:status==='error'?'#ff3b5c':'#4a5568' }}>
+              {status==='error'?'Chart unavailable':`Loading ${symbol}...`}
+            </div>
+            {status==='error' && (
+              <button onClick={() => setStatus('loading')} style={{ marginTop:10,fontFamily:"'Space Mono',monospace",fontSize:10,padding:'4px 14px',borderRadius:6,border:'1px solid #ff3b5c30',background:'#ff3b5c10',color:'#ff3b5c',cursor:'pointer' }}>
+                Retry
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }
