@@ -44,13 +44,24 @@ export default function BinanceChart({ symbol = 'BTCUSDT', interval = '15m', hei
 
         chartRef.current = chart;
 
-        // Fetch historical klines from Binance
+        // Fetch historical klines from our API proxy
         const fetchKlines = async () => {
           try {
             const response = await fetch(
-              `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`
+              `/api/binance/klines?symbol=${symbol}&interval=${interval}&limit=100`
             );
-            const data = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(`API error: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.success || !result.klines) {
+              throw new Error('Invalid response format');
+            }
+            
+            const data = result.klines;
 
             if (!Array.isArray(data)) throw new Error('Invalid data format');
 
