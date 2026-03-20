@@ -1,18 +1,27 @@
 <img width="1536" height="1024" alt="file_0000000071bc720ba7dbd7c37c0c9368" src="https://github.com/user-attachments/assets/cd59f70e-0c61-4bb3-a5d6-bdd26deb39a7" />
 
 
-🎯 NOELA — Sniper Trading Platform
+🎯 NOELA Sniper Trading Platform
 AI-powered sniper trading assistant. Less trades. Better trades.
+
 BTC · ETH · SOL · BNB — Multi-exchange · Multi-strategy · Live charts
-�
+
+
 ✨ Features
-🎯 AI Sniper Bot — Claude-powered with strict entry rules (min 3 confluences, R:R 1:3, no FOMO)
+
+🎯 AI Sniper Bot  Claude-powered with strict entry rules (min 3 confluences, R:R 1:3, no FOMO)
+
 📊 Live Candlestick Chart — Real-time data from Binance WebSocket
-💹 Multi-pair — BTC, ETH, SOL, BNB with live price feed
-🏦 Multi-exchange — Binance, Bybit, OKX
-📈 Multi-strategy — Sniper, Grid Bot, Swing, Scalping, DCA
-🤖 3 Modes — Auto Agent, Semi-Auto, Manual
-🕐 Session Detector — Asia / London / New York (WIB)
+
+💹 Multi-pair BTC, ETH, SOL, BNB with live price feed
+
+🏦 Multi-exchange  Binance, Bybit, OKX
+
+📈 Multi-strategy Sniper, Grid Bot, Swing, Scalping, DCA
+
+🤖 3 Modes Auto Agent, Semi-Auto, Manual
+
+🕐 Session Detector Asia / London / New York (WIB)
 
 🎯 Sniper Rules
 Rule
