@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 
-const client = new Anthropic({
-  apiKey:  process.env.ANTHROPIC_API_KEY,
-  baseURL: 'https://agentrouter.org/v1',
+const client = new OpenAI({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: process.env.AI_BASE_URL,
 })
 
 const SYSTEM = `You are a sniper-level crypto trading assistant focused on BTCUSDT and major crypto pairs (ETH, SOL, BNB).
@@ -99,16 +99,18 @@ export async function POST(req) {
       return m
     })
 
-    const response = await client.messages.create({
-      model:      'claude-sonnet-4-20250514',
+    const response = await client.chat.completions.create({
+      model: 'deepseek-v3.2',
       max_tokens: 1024,
-      system:     SYSTEM,
-      messages:   enriched,
+      messages: [
+        { role: 'system', content: SYSTEM },
+        ...enriched,
+      ],
     })
 
-    return Response.json({ content: response.content[0].text })
+    return Response.json({ content: response.choices[0].message.content })
   } catch (err) {
-    console.error('[Chat API]', err)
+    console.error('[Chat API]', err.response?.data || err.message)
     return Response.json({ error: 'Server error' }, { status: 500 })
   }
 }
