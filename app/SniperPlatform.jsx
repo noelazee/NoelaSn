@@ -355,4 +355,121 @@ export default function SniperPlatform() {
                         </div>
                       )
                     })}
-                    <div style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#4a5568',textAlign:'center',paddin
+                    <div style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#4a5568',textAlign:'center',padding:'10px 0' }}>No more positions</div>
+                  </>)
+              }
+            </div>
+            <div style={{ padding:'10px 8px',borderTop:'1px solid #1c1c2a' }}>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',letterSpacing:1,marginBottom:6 }}>STRATEGY</div>
+              {STRATEGIES.map(s=>(
+                <button key={s} onClick={()=>setStrategy(s)} style={{ display:'block',width:'100%',textAlign:'left',fontFamily:"'Space Mono',monospace",fontSize:11,padding:'5px 8px',borderRadius:6,border:'none',cursor:'pointer',marginBottom:2,transition:'all 0.1s',background:strategy===s?'#00f5a015':'transparent',color:strategy===s?'#00f5a0':'#6b7280' }}>
+                  {strategy===s?'▶ ':'  '}{s}
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          {/* MAIN */}
+          <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden' }}>
+            <div style={{ padding:'8px 16px',borderBottom:'1px solid #1c1c2a',display:'flex',alignItems:'center',gap:12,background:'#07070d',flexShrink:0 }}>
+              <span style={{ fontSize:20,color:PAIRS[pair].color }}>{PAIRS[pair].icon}</span>
+              <div>
+                <div style={{ fontWeight:800,fontSize:15 }}>{PAIRS[pair].symbol}</div>
+                <div style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#4a5568' }}>{exchange} · {strategy} · {mode}</div>
+              </div>
+              <div style={{ marginLeft:'auto',textAlign:'right' }}>
+                <div style={{ fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:20,color:'#fff' }}>
+                  ${prices[pair].price.toFixed(pair==='BTC'?0:2)}
+                </div>
+                <div style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:prices[pair].change>=0?'#00f5a0':'#ff3b5c' }}>
+                  {prices[pair].change>=0?'▲':'▼'} {Math.abs(prices[pair].change).toFixed(2)}%
+                </div>
+              </div>
+            </div>
+
+            <div style={{ padding:'10px 16px',borderBottom:'1px solid #1c1c2a',background:'#07070d',flexShrink:0 }}>
+              <BinanceChart symbol={PAIRS[pair].binance} pairColor={PAIRS[pair].color} height={200}/>
+            </div>
+
+            <div ref={chatRef} style={{ flex:1,overflowY:'auto',padding:'16px 20px' }}>
+              {msgs.map((m,i)=><Msg key={i} m={m} mode={mode} pair={pair}/>)}
+              {loading && (
+                <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:12 }}>
+                  <div style={{ width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#00f5a0,#0072ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,flexShrink:0 }}>🎯</div>
+                  <div style={{ background:'#12121e',border:'1px solid #1e1e30',borderRadius:'4px 12px 12px 12px' }}><TypingDots/></div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding:'0 20px 10px',display:'flex',gap:6,flexWrap:'wrap',flexShrink:0 }}>
+              {quick.map((q,i)=>(
+                <button key={i} onClick={()=>setInput(q)} className="qbtn" style={{ fontFamily:"'Space Mono',monospace",fontSize:10,padding:'5px 12px',borderRadius:20,border:'1px solid #1c1c2a',background:'transparent',color:'#6b7280',cursor:'pointer',transition:'all 0.15s' }}>
+                  {q}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ padding:'0 20px 16px',borderTop:'1px solid #1c1c2a',paddingTop:10,flexShrink:0 }}>
+              <div style={{ display:'flex',gap:10,background:'#0c0c14',border:'1px solid #1c1c2a',borderRadius:12,padding:'8px 12px',alignItems:'flex-end' }}>
+                <textarea
+                  value={input} onChange={e=>setInput(e.target.value)}
+                  onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}}
+                  placeholder={`Analisa ${pair}, tanya setup, atau scan semua pair...`}
+                  rows={1}
+                  style={{ flex:1,background:'transparent',border:'none',color:'#e2e8f0',fontFamily:"'Syne',sans-serif",fontSize:13,resize:'none',lineHeight:1.5,maxHeight:100,overflow:'auto' }}
+                />
+                <button onClick={send} disabled={loading||!input.trim()} className="sbtn" style={{ width:34,height:34,borderRadius:8,border:'none',flexShrink:0,cursor:loading||!input.trim()?'not-allowed':'pointer',background:loading||!input.trim()?'#1c1c2a':'linear-gradient(135deg,#00f5a0,#0072ff)',color:loading||!input.trim()?'#4a5568':'#050508',display:'flex',alignItems:'center',justifyContent:'center',fontSize:15,transition:'all 0.15s' }}>
+                  {loading?'⏳':'↑'}
+                </button>
+              </div>
+            </div>
+          </main>
+
+          {/* RIGHT PANEL */}
+          <aside style={{ width:176,borderLeft:'1px solid #1c1c2a',background:'#07070d',display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',padding:'12px 10px' }}>
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',letterSpacing:1,marginBottom:8 }}>SESSION</div>
+              <div style={{ background:sess.color+'15',border:`1px solid ${sess.color}30`,borderRadius:8,padding:'8px 10px' }}>
+                <div style={{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:sess.color }}>{sess.name}</div>
+                <div style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#6b7280',marginTop:2 }}>{sess.desc}</div>
+                <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',marginTop:2 }}>{sess.range}</div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',letterSpacing:1,marginBottom:8 }}>RULES</div>
+              {[['Min R:R','1:3'],['MTF','4TF'],['Max Lev','×50'],['FOMO','OFF'],['Avg Down','OFF']].map(([l,v])=>(
+                <div key={l} style={{ display:'flex',justifyContent:'space-between',padding:'4px 0',borderBottom:'1px solid #1c1c2a' }}>
+                  <span style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#4a5568' }}>{l}</span>
+                  <span style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#00f5a0',fontWeight:700 }}>{v}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',letterSpacing:1,marginBottom:8 }}>BIAS</div>
+              {Object.entries(PAIRS).map(([id,data])=>{
+                const ch=prices[id].change, bias=ch>1?'Bull':ch<-1?'Bear':'Neutral', col=ch>1?'#00f5a0':ch<-1?'#ff3b5c':'#f5a623'
+                return (
+                  <div key={id} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'4px 0',borderBottom:'1px solid #1c1c2a' }}>
+                    <div style={{ display:'flex',alignItems:'center',gap:4 }}>
+                      <span style={{ color:data.color,fontSize:12 }}>{data.icon}</span>
+                      <span style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:'#6b7280' }}>{id}</span>
+                    </div>
+                    <span style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:col,fontWeight:700 }}>{bias}</span>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div style={{ background:'#0c0c14',border:'1px solid #1c1c2a',borderRadius:8,padding:'10px',textAlign:'center' }}>
+              <div style={{ fontSize:18,marginBottom:4 }}>⚡</div>
+              <div style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:11,color:'#00f5a0' }}>Bankr Ready</div>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:9,color:'#4a5568',marginTop:3 }}>Auto-exec on A+</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </>
+  )
+}
