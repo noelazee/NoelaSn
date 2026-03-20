@@ -84,7 +84,7 @@ export default function HomePage() {
               fontFamily: "'Space Mono', monospace",
               fontWeight: 600,
             }}>
-              PRECISION. EXECUTION. REWARDS.
+              PRECISION•EXECUTION•REWARDS✓
             </p>
           </div>
         </div>
