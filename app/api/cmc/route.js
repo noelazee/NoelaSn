@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -19,20 +21,19 @@ export async function GET(request) {
 
     const json = await res.json()
 
-    
     const result = {}
     Object.entries(json.data || {}).forEach(([symbol, info]) => {
       const q = info.quote?.USD
       result[symbol] = {
-        price:        q?.price?.toFixed(2),
-        change1h:     q?.percent_change_1h?.toFixed(2),
-        change24h:    q?.percent_change_24h?.toFixed(2),
-        change7d:     q?.percent_change_7d?.toFixed(2),
-        volume24h:    q?.volume_24h?.toFixed(0),
-        marketCap:    q?.market_cap?.toFixed(0),
-        dominance:    q?.market_cap_dominance?.toFixed(2),
-        rank:         info.cmc_rank,
-        name:         info.name,
+        price:     q?.price?.toFixed(2),
+        change1h:  q?.percent_change_1h?.toFixed(2),
+        change24h: q?.percent_change_24h?.toFixed(2),
+        change7d:  q?.percent_change_7d?.toFixed(2),
+        volume24h: q?.volume_24h?.toFixed(0),
+        marketCap: q?.market_cap?.toFixed(0),
+        dominance: q?.market_cap_dominance?.toFixed(2),
+        rank:      info.cmc_rank,
+        name:      info.name,
       }
     })
 
@@ -43,7 +44,6 @@ export async function GET(request) {
       },
     })
   } catch (err) {
-    console.error('[CMC API]', err)
     return Response.json({ error: err.message }, { status: 500 })
   }
 }
