@@ -1,8 +1,8 @@
 import OpenAI from 'openai'
 
 const client = new OpenAI({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  baseURL: process.env.AI_BASE_URL,
+  apiKey: process.env.AGENTROUTER_API_KEY,
+  baseURL: 'https://api.agentrouter.org/v1',
 })
 
 const SYSTEM = `You are a sniper-level crypto trading assistant focused on BTCUSDT and major crypto pairs (ETH, SOL, BNB).
