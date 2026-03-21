@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 const COINGECKO_IDS = {
   BTCUSDT: 'bitcoin',
   ETHUSDT: 'ethereum',
