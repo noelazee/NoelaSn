@@ -185,7 +185,8 @@ function ChatMsg({ m, mode, pair }) {
       )}
     </div>
   )
-  }
+}
+
 function ChatWidget({ prices, pair, mode, strategy, exchange }) {
   const [open,    setOpen]    = useState(false)
   const [input,   setInput]   = useState('')
@@ -302,7 +303,7 @@ function ChatWidget({ prices, pair, mode, strategy, exchange }) {
       )}
     </>
   )
-}
+        }
 
 export default function SniperPlatform() {
   const isMobile = useIsMobile()
@@ -533,6 +534,7 @@ export default function SniperPlatform() {
     )
   }
 
+  
   return (
     <>
       <style>{`
@@ -659,5 +661,5 @@ export default function SniperPlatform() {
       
       <ChatWidget prices={prices} pair={pair} mode={mode} strategy={strategy} exchange={exchange}/>
     </>
-  ) }
-                                                                                                        }
+  )
+                                   }
