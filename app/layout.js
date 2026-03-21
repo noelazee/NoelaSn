@@ -1,42 +1,46 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'NOESN Sniper Trading & News Curation',
-  description: 'AI sniper trading with multi-exchange, live charts, and news curation. Earn NEWS tokens. Precision over frequency.',
-  keywords: ['crypto', 'trading', 'sniper', 'news', 'curation', 'agents', 'world-chain'],
+  metadataBase: new URL('https://v0-gbot.vercel.app'),
+  title: 'NOELA — Sniper Trading',
+  description: 'AI sniper trading with live charts. BTC ETH SOL BNB. Precision over frequency.',
+  keywords: ['crypto', 'trading', 'sniper', 'bitcoin', 'ethereum', 'solana'],
   openGraph: {
-    title: 'NOESN Sniper Trading & News Curation',
-    description: 'AI sniper trading with multi-exchange, live charts, and news curation.',
+    title: 'NOELA Sniper Trading',
+    description: 'AI sniper trading with live charts.',
     url: 'https://v0-gbot.vercel.app',
     siteName: 'NOELA',
-    images: [
-      {
-        url: '/opengraph-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'NOELA Sniper Trading Platform',
-      },
-    ],
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NOESN Sniper Trading & News Curation',
-    description: 'AI sniper trading with live charts and news curation.',
+    title: 'NOELA Sniper Trading',
+    description: 'AI sniper trading with live charts.',
     images: ['/opengraph-image.png'],
   },
   icons: {
-        icon: "/icon.png",
+    icon: '/icon.png',
     shortcut: '/icon.png',
     apple: '/icon.png',
   },
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#050508',
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body style={{ margin:0, padding:0, background:'#050508', overflowX:'hidden' }}>
+        {children}
+      </body>
     </html>
   )
 }
