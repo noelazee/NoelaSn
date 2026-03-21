@@ -251,25 +251,25 @@ function ChatWidget({ prices, pair, mode, strategy, exchange }) {
           overflow:'hidden',
         }}>
           
-         <div style={{ padding:'12px 14px', background:'#0d0d1a', borderBottom:'1px solid #1c1c2a', display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
-         <div style={{ width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#00f5a0,#0072ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14 }}>🎯</div>
+          <div style={{ padding:'12px 14px', background:'#0d0d1a', borderBottom:'1px solid #1c1c2a', display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+            <div style={{ width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#00f5a0,#0072ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14 }}>🎯</div>
             <div>
-           <div style={{ fontWeight:800, fontSize:13, color:'#fff' }}>NOELA Sniper</div>
-           <div style={{ fontSize:9, color:'#00f5a0', display:'flex', alignItems:'center', gap:4 }}>
-           <span style={{ width:5,height:5,borderRadius:'50%',background:'#00f5a0',display:'inline-block',animation:'pulse 2s infinite' }}/>
-          {sess.name} · {mode}
-           </div>
-          </div>
-           <button onClick={()=>setOpen(false)} style={{ marginLeft:'auto',background:'transparent',border:'none',color:'#4a5568',cursor:'pointer',fontSize:16 }}>✕</button>
+              <div style={{ fontWeight:800, fontSize:13, color:'#fff' }}>NOELA Sniper</div>
+              <div style={{ fontSize:9, color:'#00f5a0', display:'flex', alignItems:'center', gap:4 }}>
+                <span style={{ width:5,height:5,borderRadius:'50%',background:'#00f5a0',display:'inline-block',animation:'pulse 2s infinite' }}/>
+                {sess.name} · {mode}
+              </div>
+            </div>
+            <button onClick={()=>setOpen(false)} style={{ marginLeft:'auto',background:'transparent',border:'none',color:'#4a5568',cursor:'pointer',fontSize:16 }}>✕</button>
           </div>
 
           
           <div ref={chatRef} style={{ flex:1, overflowY:'auto', padding:'12px 12px 6px' }}>
             {msgs.map((m,i)=><ChatMsg key={i} m={m} mode={mode} pair={pair}/>)}
             {loading && (
-             <div style={{ display:'flex',alignItems:'center',gap:6 }}>
-             <div style={{ width:22,height:22,borderRadius:'50%',background:'linear-gradient(135deg,#00f5a0,#0072ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,flexShrink:0 }}>🎯</div>
-             <div style={{ background:'#12121e',border:'1px solid #1e1e30',borderRadius:'4px 10px 10px 10px' }}><TypingDots/></div>
+              <div style={{ display:'flex',alignItems:'center',gap:6 }}>
+                <div style={{ width:22,height:22,borderRadius:'50%',background:'linear-gradient(135deg,#00f5a0,#0072ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,flexShrink:0 }}>🎯</div>
+                <div style={{ background:'#12121e',border:'1px solid #1e1e30',borderRadius:'4px 10px 10px 10px' }}><TypingDots/></div>
               </div>
             )}
           </div>
@@ -303,8 +303,7 @@ function ChatWidget({ prices, pair, mode, strategy, exchange }) {
       )}
     </>
   )
-}
-
+        }
 export default function SniperPlatform() {
   const isMobile = useIsMobile()
   const prices   = usePrices()
@@ -312,9 +311,18 @@ export default function SniperPlatform() {
   const [mode,      setMode]      = useState('Semi-Auto')
   const [strategy,  setStrategy]  = useState('Sniper')
   const [exchange,  setExchange]  = useState('Binance')
-  const [tab,       setTab]       = useState('pairs')
-  const [mobileTab, setMobileTab] = useState('chart')
+  const [tab,          setTab]        = useState('pairs')
+  const [mobileTab,    setMobileTab]  = useState('chart')
+  const [showRoadmap,  setShowRoadmap]= useState(false)
   const sess = getSession()
+
+  const PHASES = [
+    { icon:'✅', label:'Phase 1', name:'GENESIS',   period:'2025 – Early 2026', color:'#00f5a0', items:['Open source repo live','Dashboard v1 deployed','Bankr + Claude integrated','NoE Sniper & Swing skill published','DEX Token Hunter live','Telegram real-time alerts'] },
+    { icon:'🔜', label:'Phase 2', name:'GROWTH',    period:'Q2–Q3 2026',        color:'#4d9fff', items:['TikTok live trading','X Spaces weekly recap','Telegram signal group','API access for early backers','NoE Sniper v2'] },
+    { icon:'🚀', label:'Phase 3', name:'SCALE',     period:'Q4 2026–2027',      color:'#f5a623', items:['Multi-user subscriptions','Institutional API tier','Autonomous agent funding pool','Base ecosystem grant','Cross-chain expansion','NOELA mobile app'] },
+    { icon:'🌐', label:'Phase 4', name:'DOMINANCE', period:'2028–2029',         color:'#9b5de5', items:['10,000+ active users','NOELA DAO governance','DEX protocol partnerships','Verified on Bankr marketplace','First institutional fund using NOELA'] },
+    { icon:'🏆', label:'Phase 5', name:'ENDGAME',   period:'2030–2031',         color:'#ff6b6b', items:['Fully autonomous agent','Self-funded via token fees','Multi-agent ecosystem','NOELA on every major chain','Mission complete'] },
+  ]
 
   const PairCard = ({ id, compact=false }) => {
     const d=PAIRS[id], p=prices[id], pos=p.change>=0
@@ -408,25 +416,44 @@ export default function SniperPlatform() {
                     <div style={{ fontSize:9,color:'#4a5568' }}>Auto A+</div>
                   </div>
                 </div>
-                <div style={{ padding:'10px 12px 14px',flexShrink:0 }}>
-                  <div style={{ fontSize:9,color:'#4a5568',letterSpacing:1,marginBottom:8,textTransform:'uppercase' }}>Strategy</div>
-                  <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:6 }}>
-                    {STRATEGIES.map(s=>(
-                      <button key={s} onClick={()=>setStrategy(s)} style={{
-                        fontSize:11,padding:'10px 8px',borderRadius:8,
-                        border:`1px solid ${strategy===s?'#00f5a050':'#1c1c2a'}`,
-                        background:strategy===s?'#00f5a015':'#0c0c14',
-                        color:strategy===s?'#00f5a0':'#6b7280',
-                        cursor:'pointer',textAlign:'left',fontFamily:"'Syne',sans-serif",
-                        display:'flex',alignItems:'center',gap:5
-                      }}>
-                        <span style={{ color:strategy===s?'#00f5a0':'#2d3748',fontSize:9 }}>{strategy===s?'▶':'○'}</span>
-                        {s}
-                      </button>
+                <div style={{ flex:1 }}/>
+              </div>
+            )}
+
+            {mobileTab==='roadmap' && (
+              <div style={{ flex:1,overflowY:'auto',padding:'14px' }}>
+                <div style={{ marginBottom:14 }}>
+                  <div style={{ fontWeight:800,fontSize:14,color:'#fff',marginBottom:2 }}>NOELA Roadmap</div>
+                  <div style={{ fontSize:9,color:'#4a5568' }}>by @noela_zee · 2025 – 2031</div>
+                </div>
+                <div style={{ display:'flex',gap:4,marginBottom:14,overflowX:'auto',paddingBottom:4 }}>
+                  {PHASES.map((p,i)=>(
+                    <div key={i} style={{ flexShrink:0,padding:'4px 10px',borderRadius:20,border:`1px solid ${p.color}50`,background:`${p.color}15`,fontSize:9,color:p.color,fontWeight:700 }}>
+                      {p.icon} {p.label}
+                    </div>
+                  ))}
+                </div>
+                {PHASES.map((p,i)=>(
+                  <div key={i} style={{ marginBottom:14,background:'#0c0c14',border:`1px solid ${p.color}30`,borderRadius:10,padding:'12px',borderLeft:`3px solid ${p.color}` }}>
+                    <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8 }}>
+                      <div>
+                        <span style={{ fontSize:11,fontWeight:800,color:p.color }}>{p.icon} {p.label} — {p.name}</span>
+                      </div>
+                      <span style={{ fontSize:8,color:'#4a5568',background:'#1c1c2a',padding:'2px 6px',borderRadius:4 }}>{p.period}</span>
+                    </div>
+                    {p.items.map((item,j)=>(
+                      <div key={j} style={{ display:'flex',alignItems:'center',gap:6,padding:'3px 0',borderBottom:'1px solid #1c1c2a' }}>
+                        <span style={{ fontSize:8,color:p.color }}>{'i===0'?'✅':'›'}</span>
+                        <span style={{ fontSize:10,color:i===0?'#e2e8f0':'#6b7280' }}>{item}</span>
+                      </div>
                     ))}
                   </div>
+                ))}
+                <div style={{ textAlign:'center',padding:'12px 0',borderTop:'1px solid #1c1c2a' }}>
+                  <div style={{ fontSize:9,color:'#4a5568',marginBottom:4 }}>Mission Complete</div>
+                  <div style={{ fontSize:11,color:'#00f5a0',fontWeight:700 }}>2031 🏆</div>
+                  <div style={{ fontSize:8,color:'#2d3748',marginTop:4 }}>"We are not building a bot. We are building a standard."</div>
                 </div>
-                <div style={{ flex:1 }}/>
               </div>
             )}
 
@@ -462,7 +489,7 @@ export default function SniperPlatform() {
 
           
           <nav style={{ height:54,borderTop:'1px solid #1c1c2a',background:'#050508',display:'flex',flexShrink:0 }}>
-            {[{id:'chart',icon:'📊',label:'Chart'},{id:'pairs',icon:'💹',label:'Pairs'},{id:'settings',icon:'⚙️',label:'Settings'}].map(t=>(
+            {[{id:'chart',icon:'📊',label:'Chart'},{id:'pairs',icon:'💹',label:'Pairs'},{id:'roadmap',icon:'🗺️',label:'Roadmap'},{id:'settings',icon:'⚙️',label:'Settings'}].map(t=>(
               <button key={t.id} onClick={()=>setMobileTab(t.id)} style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,border:'none',background:mobileTab===t.id?'#0c0c14':'transparent',cursor:'pointer',color:mobileTab===t.id?'#00f5a0':'#4a5568',borderTop:`2px solid ${mobileTab===t.id?'#00f5a0':'transparent'}` }}>
                 <span style={{ fontSize:18 }}>{t.icon}</span>
                 <span style={{ fontSize:9 }}>{t.label}</span>
@@ -477,6 +504,7 @@ export default function SniperPlatform() {
     )
   }
 
+  
   return (
     <>
       <style>{`
@@ -542,7 +570,6 @@ export default function SniperPlatform() {
             </div>
           </main>
 
-          
           <aside style={{ width:160,borderLeft:'1px solid #1c1c2a',background:'#07070d',display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',padding:'10px 8px' }}>
             <div style={{ marginBottom:14 }}>
               <div style={{ fontSize:8,color:'#4a5568',letterSpacing:1,marginBottom:7,textTransform:'uppercase' }}>Session</div>
@@ -570,11 +597,32 @@ export default function SniperPlatform() {
                 </div>
               )})}
             </div>
-            <div style={{ background:'#0c0c14',border:'1px solid #1c1c2a',borderRadius:7,padding:'9px',textAlign:'center' }}>
+            <div style={{ background:'#0c0c14',border:'1px solid #1c1c2a',borderRadius:7,padding:'9px',textAlign:'center',marginBottom:8 }}>
               <div style={{ fontSize:16,marginBottom:3 }}>⚡</div>
               <div style={{ fontWeight:800,fontSize:10,color:'#00f5a0' }}>Bankr Ready</div>
               <div style={{ fontSize:8,color:'#4a5568',marginTop:2 }}>Auto A+</div>
             </div>
+            <button onClick={()=>setShowRoadmap(r=>!r)} style={{ width:'100%',padding:'7px',borderRadius:7,border:'1px solid #1c1c2a',background:showRoadmap?'#00f5a015':'#0c0c14',color:showRoadmap?'#00f5a0':'#4a5568',cursor:'pointer',fontSize:9,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',gap:5 }}>
+              🗺️ ROADMAP
+            </button>
+            {showRoadmap && (
+              <div style={{ marginTop:8 }}>
+                {PHASES.map((p,i)=>(
+                  <div key={i} style={{ marginBottom:8,background:'#080810',border:`1px solid ${p.color}25`,borderRadius:7,padding:'8px',borderLeft:`2px solid ${p.color}` }}>
+                    <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:5 }}>
+                      <span style={{ fontSize:9,fontWeight:800,color:p.color }}>{p.icon} {p.name}</span>
+                      <span style={{ fontSize:7,color:'#4a5568' }}>{p.period}</span>
+                    </div>
+                    {p.items.map((item,j)=>(
+                      <div key={j} style={{ fontSize:8,color:i===0?'#6b7280':'#4a5568',padding:'1px 0',display:'flex',gap:4 }}>
+                        <span style={{ color:p.color,flexShrink:0 }}>›</span>{item}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+                <div style={{ textAlign:'center',padding:'6px 0',fontSize:8,color:'#00f5a0',fontWeight:700 }}>🏆 Mission 2031</div>
+              </div>
+            )}
           </aside>
         </div>
       </div>
@@ -585,5 +633,4 @@ export default function SniperPlatform() {
   )
 }
 
-  
-
+      
