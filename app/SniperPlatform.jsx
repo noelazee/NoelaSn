@@ -301,30 +301,42 @@ function EthBaseTicker({ eth }) {
   const pos = eth.change >= 0
   return (
     <div style={{
-      position:'fixed', bottom:0, left:0, right:0, zIndex:500,
-      height:28, background:'#08080f', borderTop:'1px solid #1c1c2a',
-      display:'flex', alignItems:'center', justifyContent:'center', gap:24,
-      padding:'0 16px', overflow:'hidden',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 500,
+      height: 28,
+      background: '#08080f',
+      borderTop: '1px solid #1c1c2a',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 24,
+      padding: '0 16px',
+      paddingBottom: 'env(safe-area-inset-bottom)', 
+      overflow: 'hidden',
     }}>
-      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-        <div style={{ width:6, height:6, borderRadius:'50%', background:'#627eea', flexShrink:0 }}/>
-        <span style={{ fontSize:9, color:'#6b7280', letterSpacing:1 }}>ETH/USD</span>
-        <span style={{ fontSize:10, fontWeight:700, color:'#fff' }}>
-          ${eth.price ? eth.price.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) : '—'}
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#627eea', flexShrink: 0 }}/>
+        <span style={{ fontSize: 9, color: '#6b7280', letterSpacing: 1 }}>ETH/USD</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>
+          ${eth.price ? eth.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
         </span>
         {eth.change !== 0 && (
-          <span style={{ fontSize:9, color:pos?'#7c3aed':'#ff3b5c', fontWeight:700 }}>
-            {pos?'▲':'▼'} {Math.abs(eth.change).toFixed(2)}%
+          <span style={{ fontSize: 9, color: pos ? '#7c3aed' : '#ff3b5c', fontWeight: 700 }}>
+            {pos ? '▲' : '▼'} {Math.abs(eth.change).toFixed(2)}%
           </span>
         )}
       </div>
-      <div style={{ width:1, height:14, background:'#1c1c2a' }}/>
-      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-        <div style={{ width:6, height:6, borderRadius:'50%', background:'#3b82f6', animation:'pulse2 2s infinite', flexShrink:0 }}/>
-        <span style={{ fontSize:9, color:'#3b82f6', letterSpacing:1 }}>BASE NETWORK · LIVE</span>
+      <div style={{ width: 1, height: 14, background: '#1c1c2a' }}/>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', animation: 'pulse2 2s infinite', flexShrink: 0 }}/>
+        <span style={{ fontSize: 9, color: '#3b82f6', letterSpacing: 1 }}>BASE NETWORK · LIVE</span>
       </div>
-      <div style={{ width:1, height:14, background:'#1c1c2a' }}/>
-      <span style={{ fontSize:9, color:'#4a5568' }}>Built on Base · Powered by NOELA_ZEE · 2025–2031</span>
+      <div style={{ width: 1, height: 14, background: '#1c1c2a' }}/>
+      <span style={{ fontSize: 9, color: '#4a5568' }}>Built on Base · Powered by NOELA_ZEE · 2025–2031</span>
     </div>
   )
 }
