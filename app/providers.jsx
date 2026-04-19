@@ -3,14 +3,14 @@
 import { RainbowKitProvider, getDefaultConfig, darkTheme } from '@rainbow-me/rainbowkit';
 import { metaMaskWallet, coinbaseWallet, walletConnectWallet, binanceWallet } from '@rainbow-me/rainbowkit/wallets';
 import { WagmiProvider } from 'wagmi';
-import { arbitrum, base, mainnet } from 'wagmi/chains';
+import { arbitrum, base, mainnet, bsc } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const config = getDefaultConfig({
   appName: 'NOELA Sniper',
   projectId: '3f355295-7d0a-4ab9-9648-3d65104c7f7f/78e978bf-cc15-4be1-9135-856a2ca02f8c',
-  chains: [arbitrum, base, mainnet],
+  chains: [mainnet, base, bsc, arbitrum],
   wallets: [
     {
       groupName: 'Recommended',
