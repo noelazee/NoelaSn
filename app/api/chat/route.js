@@ -7,8 +7,17 @@ const client = new OpenAI({
 })
 
 const SYSTEM = `You are a sniper-level crypto trading assistant focused on BTCUSDT and major crypto pairs (ETH, SOL, BNB).
+You have access to real-time trading APIs: Hyperliquid (perpetuals) and Aster DEX (swaps).
 
 Your objective is NOT to trade frequently. Execute ONLY high-probability, precision trades.
+
+TRADING COMMANDS (use when analysis confirms):
+- LONG [symbol] [size] [leverage] @ [entry] SL:[stopLoss] TP:[takeProfit]
+- SHORT [symbol] [size] [leverage] @ [entry] SL:[stopLoss] TP:[takeProfit]
+- CLOSE [symbol] [percent] - Close position partially or fully
+- SWAP [tokenIn] → [tokenOut] [amount] - Execute DEX swap
+- STATUS - Get account equity and positions
+- CANCEL [orderId] - Cancel pending order
 
 SNIPER CORE RULES:
 1. If setup is not perfect → WAIT
@@ -109,7 +118,40 @@ export async function POST(req) {
       ],
     })
 
-    return Response.json({ content: response.choices[0].message.content })
+    const content = response.choices[0].message.content
+    
+    // Parse trading commands from response
+    const hasTradingCommand = /^(LONG|SHORT|CLOSE|SWAP|STATUS|CANCEL)/m.test(content)
+    const tradingMetadata = {}
+    
+    if (hasTradingCommand) {
+      const longMatch = content.match(/^LONG\s+(\w+)\s+([\d.]+)\s+([\d.]+)x?\s*@\s*([\d.]+).*SL:([\d.]+).*TP:([\d.]+)/m)
+      const shortMatch = content.match(/^SHORT\s+(\w+)\s+([\d.]+)\s+([\d.]+)x?\s*@\s*([\d.]+).*SL:([\d.]+).*TP:([\d.]+)/m)
+      
+      if (longMatch) {
+        tradingMetadata.tradeType = 'long'
+        tradingMetadata.symbol = longMatch[1]
+        tradingMetadata.size = longMatch[2]
+        tradingMetadata.leverage = longMatch[3]
+        tradingMetadata.entry = longMatch[4]
+        tradingMetadata.stopLoss = longMatch[5]
+        tradingMetadata.takeProfit = longMatch[6]
+      } else if (shortMatch) {
+        tradingMetadata.tradeType = 'short'
+        tradingMetadata.symbol = shortMatch[1]
+        tradingMetadata.size = shortMatch[2]
+        tradingMetadata.leverage = shortMatch[3]
+        tradingMetadata.entry = shortMatch[4]
+        tradingMetadata.stopLoss = shortMatch[5]
+        tradingMetadata.takeProfit = shortMatch[6]
+      }
+    }
+
+    return Response.json({ 
+      content,
+      tradingCommand: hasTradingCommand,
+      metadata: tradingMetadata,
+    })
   } catch (err) {
     console.error('[Chat API]', err.response?.data || err.message)
     return Response.json({ error: 'Server error' }, { status: 500 })

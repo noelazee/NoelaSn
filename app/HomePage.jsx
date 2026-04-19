@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Navbar from './components/Navbar'
 
 const SOCIALS = [
   { icon: '𝕏', label: 'X / Twitter', url: 'https://x.com/xnoelasn', color: '#fff' },
@@ -76,6 +77,8 @@ export default function HomePage() {
       color: '#e2e8f0',
       overflowX: 'hidden',
     }}>
+      <Navbar />
+      
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,7 +182,7 @@ export default function HomePage() {
       <div style={{ position:'relative', zIndex:1, borderTop:'1px solid #2d2d45', borderBottom:'1px solid #2d2d45', background:'#08080f', height:36, display:'flex', alignItems:'center', overflow:'hidden' }}>
         <div style={{ display:'flex', gap:48, animation:'marquee 20s linear infinite', whiteSpace:'nowrap' }}>
           {[...Array(2)].map((_, ri) => (
-            ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', '🎯 NOELA SNIPER', 'PRECISION OVER FREQUENCY', 'BUILT ON BASE', 'POWERED BY BANKR + CLAUDE', 'LESS TRADES = BETTER TRADES'].map((t, i) => (
+            ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', '���� NOELA SNIPER', 'PRECISION OVER FREQUENCY', 'BUILT ON BASE', 'POWERED BY BANKR + CLAUDE', 'LESS TRADES = BETTER TRADES'].map((t, i) => (
               <span key={`${ri}-${i}`} style={{ fontSize:10, color: t.startsWith('🎯') || t === 'PRECISION OVER FREQUENCY' || t === 'LESS TRADES = BETTER TRADES' ? '#a78bfa' : '#4a5568', letterSpacing:2, fontWeight:700 }}>{t}</span>
             ))
           ))}
